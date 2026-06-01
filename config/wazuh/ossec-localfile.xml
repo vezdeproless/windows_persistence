@@ -1,0 +1,5 @@
+<!-- Add this block to /var/ossec/etc/ossec.conf on the Wazuh manager. -->
+<localfile>
+  <log_format>json</log_format>
+  <location>/home/wazuh/uploads/*/processed/Registry.json</location>
+</localfile>
