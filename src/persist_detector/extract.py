@@ -85,6 +85,22 @@ def iter_extraction_jobs(input_root: Path) -> list[ExtractionJob]:
     return jobs
 
 
+def build_recmd_command(recmd: Path, job: ExtractionJob, output_dir: Path) -> list[str]:
+    return [
+        str(recmd),
+        "-f",
+        str(job.hive_path),
+        "--kn",
+        job.branch,
+        "--json",
+        str(output_dir),
+        "--jsonf",
+        job.output_name,
+        "--recover",
+        "true",
+    ]
+
+
 def run_extraction(input_root: Path, output_dir: Path, recmd: Path) -> int:
     jobs = iter_extraction_jobs(input_root)
     if not jobs:
@@ -93,25 +109,19 @@ def run_extraction(input_root: Path, output_dir: Path, recmd: Path) -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for job in jobs:
-        command = [
-            str(recmd),
-            "--f",
-            str(job.hive_path),
-            "--kn",
-            job.branch,
-            "--json",
-            str(output_dir),
-            "--jsonf",
-            job.output_name,
-            "--recover",
-            "true",
-        ]
-
+        command = build_recmd_command(recmd, job, output_dir)
         completed = subprocess.run(command, text=True, capture_output=True, check=False)
         if completed.returncode != 0:
             raise RuntimeError(
                 "RECmd extraction failed for "
                 f"{job.hive_path} branch {job.branch!r}: {completed.stderr or completed.stdout}"
             )
+
+    json_outputs = list(output_dir.rglob("*.json"))
+    if not json_outputs:
+        raise RuntimeError(
+            "RECmd completed without errors but did not create any JSON files in "
+            f"{output_dir}. Check the --recmd wrapper and run one RECmd command manually."
+        )
 
     return len(jobs)
