@@ -46,7 +46,9 @@ def command_process(args: argparse.Namespace) -> int:
     count_jobs = run_extraction(args.input, extracted_dir, args.recmd)
     count_records = normalize_directory(extracted_dir, output, host_name=host_name)
 
-    if not args.keep_extracted and extracted_dir.exists():
+    if count_records == 0:
+        print(f"Warning: no normalized records were written. Kept extracted JSON for inspection: {extracted_dir}")
+    elif not args.keep_extracted and extracted_dir.exists():
         shutil.rmtree(extracted_dir)
 
     print(f"Created extraction jobs: {count_jobs}")
