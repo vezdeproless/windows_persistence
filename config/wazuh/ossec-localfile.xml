@@ -2,4 +2,11 @@
 <localfile>
   <log_format>json</log_format>
   <location>/home/wazuh/uploads/*/processed/Registry.json</location>
+  <only-future-events max-size="2GB">no</only-future-events>
+</localfile>
+
+<localfile>
+  <log_format>json</log_format>
+  <location>/home/wazuh/uploads/*/processed/PersistenceHunt.json</location>
+  <only-future-events max-size="2GB">no</only-future-events>
 </localfile>
