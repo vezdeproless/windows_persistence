@@ -18,4 +18,29 @@
     <field name="threat.technique.id">T1546/008|T1546/011|T1546/012|T1556/002|T1556/008|T1505/005</field>
     <description>High-risk Windows persistence artifact: $(reg.key.path) $(file.path)</description>
   </rule>
+
+  <rule id="110510" level="4">
+    <decoded_as>json</decoded_as>
+    <field name="event.module">windows-persistence-detection</field>
+    <field name="event.dataset">windows.registry.persistence.hunt</field>
+    <description>Windows persistence frequency analysis record: $(hunt.kind) $(hunt.group.value)</description>
+  </rule>
+
+  <rule id="110511" level="7">
+    <if_sid>110510</if_sid>
+    <field name="frequency.rarity">unique|rare</field>
+    <description>Rare Windows persistence artifact group: $(hunt.kind) $(hunt.group.value)</description>
+  </rule>
+
+  <rule id="110512" level="9">
+    <if_sid>110510</if_sid>
+    <field name="anomaly.executable.path">true</field>
+    <description>Anomalous executable path in Windows persistence data: $(file.path)</description>
+  </rule>
+
+  <rule id="110513" level="10">
+    <if_sid>110510</if_sid>
+    <field name="hunt.suspicious">true</field>
+    <description>Suspicious Windows persistence hunt finding: $(hunt.kind) $(hunt.group.value)</description>
+  </rule>
 </group>
